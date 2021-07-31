@@ -1,39 +1,8 @@
 const CategoryRoute = require("express").Router();
-const CategoryModel = require("../models/Category.model");
+const categoryController = require("../controllers/category.controllers");
 
-router.post("/", async (req, res) => {
-  const newCat = new Category(req.body);
-  try {
-    const savedCat = await newCat.save();
-    res.status(200).json({
-      message: "New Category Added",
-      error: false,
-      data: savedCat,
-    });
-  } catch (err) {
-    res.status(500).json({
-      message: err,
-      error: true,
-      data: null,
-    });
-  }
-});
+router.post("/", categoryController.createCategory);
 
-router.get("/", async (req, res) => {
-  try {
-    const cats = await Category.find();
-    res.status(200).json({
-      message: "Category",
-      error: false,
-      data: cats,
-    });
-  } catch (err) {
-    res.status(500).json({
-      message: err,
-      error: true,
-      data: null,
-    });
-  }
-});
+router.get("/", categoryController.allCategory);
 
 module.exports = router;

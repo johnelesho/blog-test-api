@@ -5,6 +5,9 @@ const mongoose = require("mongoose");
 // Routes
 const authRoute = require("./routes/auth.route");
 const userRoute = require("./routes/users.routes");
+const postRoute = require("./routes/posts.route");
+const categoryRoute = require("./routes/categories.route");
+
 require("dotenv").config();
 
 let uri = process.env.MONGO_URL;
@@ -21,8 +24,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/auth", authRoute);
-app.use("/api/user", userRoute);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/user", userRoute);
+app.use("api/v1/posts", postRoute);
+app.use("api/v1/category", categoryRoute);
 
 mongoose
   .connect(uri, {
