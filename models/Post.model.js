@@ -1,28 +1,17 @@
 const mongoose = require("mongoose");
-
-const commentSchema = mongoose.Schema(
-  {
-    author: {
-      type: String,
-      required: true,
-    },
-    body: {
-      type: String,
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
 const PostSchema = mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      required: [true, "Post must have a title"],
       unique: true,
     },
-    description: {
+    slug: {
       type: String,
-      required: true,
+    },
+    body: {
+      type: String,
+      required: [true, "post must have a body"],
     },
     photo: {
       type: String,
@@ -30,14 +19,11 @@ const PostSchema = mongoose.Schema(
     },
     author: {
       type: String,
-      required: true,
+      required: [true, "Post must have an author"],
     },
     categories: {
       type: Array,
       required: false,
-    },
-    comments: {
-      type: [commentSchema],
     },
   },
   { timestamps: true }

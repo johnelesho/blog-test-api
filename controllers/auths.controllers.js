@@ -1,10 +1,11 @@
 const UserModel = require("../models/User.model.js");
 const bcrypt = require("bcrypt");
+const ResponseError = require("../utils/responseError.utils");
 
 // @desc      Register user
 // @route     POST /api/v1/auth/register
 // @access    Public
-exports.registerUser = async (req, res) => {
+exports.registerUser = async (req, res, next) => {
   const { username, email, password: reqPassword, displayPicture } = req.body;
   try {
     const salt = await bcrypt.genSalt(10);
@@ -24,28 +25,20 @@ exports.registerUser = async (req, res) => {
       data: others,
     });
   } catch (err) {
-    res.status(500).json({
-      message: err,
-      error: true,
-      data: null,
-    });
+    next(err);
   }
 };
 
 // @desc      Login user
 // @route     POST /api/v1/auth/login
 // @access    Public
-exports.loginUser = async (req, res) => {
+exports.loginUser = async (req, res, next) => {
   const { username, password: reqPassword } = req.body;
   try {
     const user = await UserModel.findOne({ username });
     // console.log(user);
-    !user &&
-      res.status(404).json({
-        message: "Login Failed",
-        error: true,
-        data: null,
-      });
+    if (!user) return next(new ResponseError("Login Failed", 401));
+
     const checkPassword = await bcrypt.compare(reqPassword, user.password);
     // console.log(checkPassword);
     const { password, ...others } = user._doc;
@@ -57,6 +50,6 @@ exports.loginUser = async (req, res) => {
         data: others,
       });
   } catch (err) {
-    res.status(500).json(err);
+    next(err);
   }
 };

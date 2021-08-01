@@ -1,9 +1,10 @@
 const CategoryModel = require("../models/Category.model");
+const ResponseError = require("../utils/responseError.utils");
 
 // @desc      Create Category
 // @route     POST /api/v1/category/
 // @access    Private
-exports.createCategory = async (req, res) => {
+exports.createCategory = async (req, res, next) => {
   const newCat = new CategoryModel(req.body);
   try {
     const savedCat = await newCat.save();
@@ -13,18 +14,14 @@ exports.createCategory = async (req, res) => {
       data: savedCat,
     });
   } catch (err) {
-    res.status(500).json({
-      message: err,
-      error: true,
-      data: null,
-    });
+    next(err);
   }
 };
 
-// @desc      Login user
-// @route     POST /api/v1/category
+// @desc      Get all category
+// @route     GET /api/v1/category
 // @access    Public
-exports.allCategory = async (req, res) => {
+exports.allCategory = async (req, res, next) => {
   try {
     const cats = await CategoryModel.find();
     res.status(200).json({
@@ -33,10 +30,6 @@ exports.allCategory = async (req, res) => {
       data: cats,
     });
   } catch (err) {
-    res.status(500).json({
-      message: err,
-      error: true,
-      data: null,
-    });
+    next(err);
   }
 };

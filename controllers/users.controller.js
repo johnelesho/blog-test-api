@@ -1,11 +1,12 @@
 const UserModel = require("../models/User.model.js");
 const bcrypt = require("bcrypt");
 const PostModel = require("../models/Post.model.js");
+const ResponseError = require("../utils/responseError.utils.js");
 
 // @desc      Update User
 // @route     POST /api/v1/user/:id
 // @access    Private
-exports.updateUser = async (req, res) => {
+exports.updateUser = async (req, res, next) => {
   let { id, password } = req.body;
   if (id === req.params.id) {
     if (password) {
@@ -27,25 +28,17 @@ exports.updateUser = async (req, res) => {
         data: others,
       });
     } catch (err) {
-      res.status(500).json({
-        message: err,
-        error: true,
-        data: null,
-      });
+      next(err);
     }
   } else {
-    res.status(401).json({
-      message: "You can update only your account",
-      error: true,
-      data: null,
-    });
+    return next(new ResponseError("You can update only your account", 401));
   }
 };
 
 // @desc      Create User
 // @route     POST /api/v1/user/:id
 // @access    Private
-exports.deleteUser = async (req, res) => {
+exports.deleteUser = async (req, res, next) => {
   let { id, password } = req.body;
   if (id === req.params.id) {
     try {
@@ -55,39 +48,27 @@ exports.deleteUser = async (req, res) => {
         await PostModel.deleteMany({ username: user.username });
 
         const deletedUser = await UserModel.findByIdAndDelete(req.params.id);
-        const { password, ...others } = deletedUser._doc;
+        // const { password, ...others } = deletedUser._doc;
         res.status(200).json({
           message: "Successfully deleted the user record",
           error: false,
-          data: others,
-        });
-      } catch (err) {
-        res.status(500).json({
-          message: err,
-          error: true,
           data: null,
         });
+      } catch (err) {
+        next(err);
       }
     } catch (err) {
-      res.status(404).json({
-        message: err,
-        error: true,
-        data: null,
-      });
+      next(err);
     }
   } else {
-    res.status(401).json({
-      message: "You can delete only your account",
-      error: true,
-      data: null,
-    });
+    return next(new ResponseError("You can delete only your account", 401));
   }
 };
 
-// @desc      Create Category
-// @route     POST /api/v1/user/:id
+// @desc      Get User
+// @route     Get /api/v1/user/:id
 // @access    public
-exports.getUser = async (req, res) => {
+exports.getUser = async (req, res, next) => {
   //   console.log(req.params);
   try {
     const user = await UserModel.findById(req.params.id);
@@ -99,10 +80,29 @@ exports.getUser = async (req, res) => {
       data: others,
     });
   } catch (err) {
-    res.status(500).json({
-      message: err,
-      error: true,
-      data: null,
+    next(err);
+  }
+};
+
+// @desc      Get all users
+// @route     POST /api/v1/user/
+// @access    public
+exports.getAllUser = async (req, res, next) => {
+  //   console.log(req.params);
+  try {
+    let users = await UserModel.find();
+    console.log(users);
+    users = users.map((blogUser) => {
+      const { password, ...others } = blogUser._doc;
+      return others;
     });
+
+    res.status(203).json({
+      message: "User record exist",
+      error: false,
+      data: users,
+    });
+  } catch (err) {
+    next(err);
   }
 };
