@@ -93,17 +93,18 @@ exports.createComment = async (req, res) => {
   }
 };
 
-// @desc      Update Post
-// @route     PUT /api/v1/posts/:id/comments
+// @desc      Edit a comment
+// @route     PUT /api/v1/posts/:id/comments/:id
 // @access    Public
-exports.createComment = async (req, res) => {
-  //   const { author, body } = req.body;
+exports.editComment = async (req, res) => {
+  const { author, body } = req.body;
   try {
     const updatedPost = await PostModel.findByIdAndUpdate(
       req.params.id,
       {
-        $push: { comments: req.body },
+        "comments.author": author,
       },
+      { $set: { "comments.$.body": body } },
       { new: true }
     );
     res.status(203).json({
@@ -125,7 +126,7 @@ exports.createComment = async (req, res) => {
 // @access    Private
 exports.deletePost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await PostModel.findById(req.params.id);
     if (post.username === req.body.username) {
       try {
         await post.delete();
@@ -162,7 +163,7 @@ exports.deletePost = async (req, res) => {
 // @access    Public
 exports.getSinglePost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await PostModel.findById(req.params.id);
     res.status(200).json({
       message: "Post Found",
       error: false,
@@ -181,12 +182,12 @@ exports.getSinglePost = async (req, res) => {
 // @route     POST /api/v1/post/
 // @access    Public
 exports.getAllPost = async (req, res) => {
-  const username = req.query.user;
+  const author = req.query.author;
   const catName = req.query.cat;
   try {
     let posts;
-    if (username) {
-      posts = await Post.find({ username });
+    if (author) {
+      posts = await PostModel.find({ author });
     } else if (catName) {
       posts = await Post.find({
         categories: {
@@ -194,12 +195,33 @@ exports.getAllPost = async (req, res) => {
         },
       });
     } else {
-      posts = await Post.find();
+      posts = await PostModel.find();
     }
     res.status(200).json({
       message: "All Posts matching query",
       error: false,
       data: posts,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err,
+      error: true,
+      data: null,
+    });
+  }
+};
+
+// @desc      Get all Comments on a post
+// @route     POST /api/v1/post/
+// @access    Public
+exports.getAllCommentOnPost = async (req, res) => {
+  try {
+    posts = await PostModel.findById(req.params.id);
+    console.log(posts);
+    res.status(200).json({
+      message: "All Posts matching query",
+      error: false,
+      data: posts.comments,
     });
   } catch (err) {
     res.status(500).json({
