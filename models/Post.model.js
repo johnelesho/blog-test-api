@@ -1,5 +1,18 @@
 const mongoose = require("mongoose");
 
+const commentSchema = mongoose.Schema(
+  {
+    author: {
+      type: String,
+      required: true,
+    },
+    body: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 const PostSchema = mongoose.Schema(
   {
     title: {
@@ -22,6 +35,9 @@ const PostSchema = mongoose.Schema(
     categories: {
       type: Array,
       required: false,
+    },
+    comments: {
+      type: [commentSchema],
     },
   },
   { timestamps: true }

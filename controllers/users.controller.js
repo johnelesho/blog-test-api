@@ -21,7 +21,7 @@ exports.updateUser = async (req, res) => {
         { new: true }
       );
       const { password, ...others } = updatedUser._doc;
-      res.status(203).json({
+      res.status(200).json({
         message: "Successfully Updated the user record",
         error: false,
         data: others,
@@ -56,7 +56,7 @@ exports.deleteUser = async (req, res) => {
 
         const deletedUser = await UserModel.findByIdAndDelete(req.params.id);
         const { password, ...others } = deletedUser._doc;
-        res.status(203).json({
+        res.status(200).json({
           message: "Successfully deleted the user record",
           error: false,
           data: others,
@@ -88,8 +88,10 @@ exports.deleteUser = async (req, res) => {
 // @route     POST /api/v1/user/:id
 // @access    public
 exports.getUser = async (req, res) => {
+  //   console.log(req.params);
   try {
-    const user = await User.findById(req.params.id);
+    const user = await UserModel.findById(req.params.id);
+    console.log(user);
     const { password, ...others } = user._doc;
     res.status(203).json({
       message: "User record exist",

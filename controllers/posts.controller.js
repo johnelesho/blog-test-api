@@ -31,7 +31,7 @@ exports.updatePost = async (req, res) => {
     const post = await PostModel.findById(req.params.id);
     if (post.username === req.body.username) {
       try {
-        const updatedPost = await Post.findByIdAndUpdate(
+        const updatedPost = await PostModel.findByIdAndUpdate(
           req.params.id,
           {
             $set: req.body,
@@ -57,6 +57,60 @@ exports.updatePost = async (req, res) => {
         data: null,
       });
     }
+  } catch (err) {
+    res.status(500).json({
+      message: err,
+      error: true,
+      data: null,
+    });
+  }
+};
+
+// @desc      Add comment to a Post
+// @route     PUT /api/v1/posts/:id/comments
+// @access    Public
+exports.createComment = async (req, res) => {
+  //   const { author, body } = req.body;
+  try {
+    const updatedPost = await PostModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { comments: req.body },
+      },
+      { new: true }
+    );
+    res.status(203).json({
+      message: "Comment Added",
+      error: false,
+      data: updatedPost,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err,
+      error: true,
+      data: null,
+    });
+  }
+};
+
+// @desc      Update Post
+// @route     PUT /api/v1/posts/:id/comments
+// @access    Public
+exports.createComment = async (req, res) => {
+  //   const { author, body } = req.body;
+  try {
+    const updatedPost = await PostModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { comments: req.body },
+      },
+      { new: true }
+    );
+    res.status(203).json({
+      message: "Comment Added",
+      error: false,
+      data: updatedPost,
+    });
   } catch (err) {
     res.status(500).json({
       message: err,
