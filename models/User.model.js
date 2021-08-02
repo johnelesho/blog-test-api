@@ -52,4 +52,10 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+UserSchema.pre("remove", async function (next) {
+  console.log(`Posts being removed for this user ${this._id}`);
+  await this.model("Post").deleteMany({ user: this._id });
+  next();
+});
+
 module.exports = mongoose.model("User", UserSchema);

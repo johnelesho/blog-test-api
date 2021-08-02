@@ -31,6 +31,9 @@ postRoute
 //UPDATE POST - Add category
 postRoute.put("/:id/category", protect, postController.addCategory);
 
+//UPDATE POST - Remove category
+postRoute.delete("/:id/category", protect, postController.removeCategory);
+
 // //Add Comment
 // postRoute.post("/:id/comments", postController.createComment);
 

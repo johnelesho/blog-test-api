@@ -6,7 +6,8 @@ const ResponseError = require("../utils/responseError.utils.js");
 // @route     POST /api/v1/post/
 // @access    Private
 exports.createPost = async (req, res, next) => {
-  const newPost = new PostModel(req.body);
+  console.log(req.user);
+  const newPost = new PostModel({ ...req.body, user: req.user.id });
   try {
     const savedPost = await newPost.save();
     res.status(200).json({
@@ -54,14 +55,51 @@ exports.updatePost = async (req, res, next) => {
 // @route     PUT /api/v1/posts/:id/category
 // @access    Private
 exports.addCategory = async (req, res, next) => {
+  const { category } = req.body;
   try {
     const post = await PostModel.findById(req.params.id);
-    if (post.author === req.body.author) {
+    console.log(req.user);
+    console.log(post);
+    if (post.user == req.user.id) {
       try {
         const updatedPost = await PostModel.findByIdAndUpdate(
           req.params.id,
           {
-            category: { $push: req.body },
+            $addToSet: { categories: { $each: category } },
+          },
+          { new: true }
+        );
+        res.status(203).json({
+          message: "Post Updated",
+          success: true,
+          data: updatedPost,
+        });
+      } catch (err) {
+        next(err);
+      }
+    } else {
+      return next(new ResponseError("You can not update this post", 401));
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc      Update Post Add Category
+// @route     PUT /api/v1/posts/:id/category
+// @access    Private
+exports.removeCategory = async (req, res, next) => {
+  const { category } = req.body;
+  try {
+    const post = await PostModel.findById(req.params.id);
+    console.log(req.user);
+    console.log(post);
+    if (post.user == req.user.id) {
+      try {
+        const updatedPost = await PostModel.findByIdAndUpdate(
+          req.params.id,
+          {
+            $pullAll: { categories: [...category] },
           },
           { new: true }
         );
@@ -138,7 +176,8 @@ exports.editComment = async (req, res, next) => {
 exports.deletePost = async (req, res, next) => {
   try {
     const post = await PostModel.findById(req.params.id);
-    if (post.author === req.body.author) {
+    console.log(req.user);
+    if (post.author === req.user.author) {
       try {
         await post.delete();
         res.status(200).json({
@@ -182,22 +221,28 @@ exports.getSinglePost = async (req, res, next) => {
 // @route     Get /api/v1/posts/
 // @access    Public
 exports.getAllPost = async (req, res, next) => {
-  const author = req.query.author;
-  const catName = req.query.cat;
+  // const author = req.query.author;
+  // const catName = req.query.cat;
+  const { user, category, ...others } = req.query;
+  console.log(others);
   try {
     let posts;
-    if (author) {
-      posts = await PostModel.find({ author });
-    } else if (catName) {
-      posts = await Post.find({
-        categories: {
-          $in: [catName],
+    if (user) {
+      posts = await PostModel.paginate({ user }, others);
+    } else if (category) {
+      posts = await PostModel.paginate(
+        {
+          categories: {
+            $in: [category],
+          },
         },
-      });
+        others
+      );
     } else {
-      posts = await PostModel.find();
+      posts = await PostModel.paginate({}, others);
     }
-    if (posts.length > 0) {
+    console.log(posts);
+    if (posts.docs.length > 0) {
       res.status(200).json({
         message: "All Post Matching query",
         success: true,
@@ -216,7 +261,7 @@ exports.getAllPost = async (req, res, next) => {
 // @access    Public
 exports.getAllCommentOnPost = async (req, res, next) => {
   try {
-    const comments = await CommentModel.find({ postId: req.params.postId });
+    const comments = await CommentModel.find({ post: req.params.postId });
     console.log(comments);
     if (comments.length > 0) {
       res.status(200).json({
@@ -239,7 +284,7 @@ exports.getASingleCommentOnPost = async (req, res, next) => {
   try {
     const comments = await CommentModel.find({
       _id: req.params.commentId,
-      postId: req.params.postId,
+      post: req.params.postId,
     });
     // console.log(comments);
     // console.log(comments.length);

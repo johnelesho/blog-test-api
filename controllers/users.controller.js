@@ -7,7 +7,9 @@ const ResponseError = require("../utils/responseError.utils.js");
 // @route     POST /api/v1/user/:id
 // @access    Private
 exports.updateUser = async (req, res, next) => {
-  let { id, password } = req.body;
+  console.log(req.user);
+  let { id } = req.user;
+  let password = req.body.password;
   if (id === req.params.id) {
     if (password) {
       const salt = await bcrypt.genSalt(10);
@@ -39,8 +41,8 @@ exports.updateUser = async (req, res, next) => {
 // @route     POST /api/v1/user/:id
 // @access    Private
 exports.deleteUser = async (req, res, next) => {
-  let { id } = req.body;
-  if (id === req.params.id) {
+  console.log(req.user);
+  if (req.user.id === req.params.id) {
     try {
       const user = await UserModel.findById(req.params.id);
 

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+const mongoosePaginate = require("mongoose-paginate-v2");
 const PostSchema = mongoose.Schema(
   {
     title: {
@@ -18,9 +19,10 @@ const PostSchema = mongoose.Schema(
       type: String,
       required: false,
     },
-    author: {
-      type: String,
-      required: [true, "Post must have an author"],
+    user: {
+      type: mongoose.Schema.ObjectId || mongoose.Schema.username,
+      ref: "User",
+      required: [true, "Post must have a User (Author)"],
     },
     categories: {
       type: Array,
@@ -37,7 +39,9 @@ PostSchema.pre("save", function (next) {
 
 PostSchema.pre("remove", async function (next) {
   console.log(`Comments being removed from Post ${this._id}`);
-  await this.model("Comment").deleteMany({ postId: this._id });
+  await this.model("Comment").deleteMany({ post: this._id });
   next();
 });
+
+PostSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model("Post", PostSchema);

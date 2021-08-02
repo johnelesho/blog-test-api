@@ -16,7 +16,7 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
     const user = await UserModel.create(req.body);
 
     // const user = await newUser.save();
-    // const { password, ...others } = newUser._doc;
+    const { password, ...others } = user._doc;
 
     // const token = user.getSignedJwtToken();
 
@@ -27,7 +27,7 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
     //   token,
     // });
 
-    sendTokenResponse(user, 200, res);
+    sendTokenResponse(others, 200, res);
   } catch (err) {
     next(err);
   }
