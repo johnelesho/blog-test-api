@@ -2,10 +2,12 @@ const mongoose = require("mongoose");
 
 const CommentSchema = mongoose.Schema(
   {
-    postId: {
-      type: String,
+    post: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Post",
       required: [true, "Comment must be associated to a Post"],
     },
+
     author: {
       type: String,
       required: [true, "Comments must have an author"],

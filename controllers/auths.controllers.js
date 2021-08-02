@@ -1,11 +1,12 @@
 const UserModel = require("../models/User.model.js");
 const bcrypt = require("bcrypt");
 const ResponseError = require("../utils/responseError.utils");
+const asyncHandler = require("../middlewares/async.middleware.js");
 
 // @desc      Register user
 // @route     POST /api/v1/auth/register
 // @access    Public
-exports.registerUser = async (req, res, next) => {
+exports.registerUser = asyncHandler(async (req, res, next) => {
   // const { username, email, password, displayPicture } = req.body;
   try {
     // const salt = await bcrypt.genSalt(10);
@@ -30,12 +31,12 @@ exports.registerUser = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
+});
 
 // @desc      Login user
 // @route     POST /api/v1/auth/login
 // @access    Public
-exports.loginUser = async (req, res, next) => {
+exports.loginUser = asyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
 
   //Validate Login credentials
@@ -72,7 +73,35 @@ exports.loginUser = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
+});
+
+// @desc      Log user out / clear cookie
+// @route     GET /api/v1/auth/logout
+// @access    Public
+exports.logout = asyncHandler(async (req, res, next) => {
+  res.cookie("token", "none", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
+// @desc      Get current logged in user
+// @route     GET /api/v1/auth/user
+// @access    Private
+exports.loggedInUser = asyncHandler(async (req, res, next) => {
+  // user is already available in req due to the protect middleware
+  const user = req.user;
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
+});
 
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {

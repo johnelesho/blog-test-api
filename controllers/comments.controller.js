@@ -8,18 +8,12 @@ const ResponseError = require("../utils/responseError.utils");
 exports.createComment = async (req, res, next) => {
   const comment = new CommentModel(req.body);
   try {
-    const associatedPost = await PostModel.findById(req.body.postId);
-    console.log(associatedPost);
-    if (associatedPost) {
-      const savedComment = await comment.save();
-      res.status(200).json({
-        message: `New Comment Added to post with id ${req.body.postId}`,
-        success: true,
-        data: savedComment,
-      });
-    } else {
-      return next(new ResponseError(`Post with ${req.body.postId} not found`));
-    }
+    const savedComment = await comment.save();
+    res.status(200).json({
+      message: `New Comment Added to post`,
+      success: true,
+      data: savedComment,
+    });
   } catch (err) {
     next(err);
   }

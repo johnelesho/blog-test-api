@@ -1,10 +1,18 @@
 const authRoute = require("express").Router();
-const authController = require("../controllers/auths.controllers");
+const {
+  registerUser,
+  loggedInUser,
+  loginUser,
+} = require("../controllers/auths.controllers");
+const { protect } = require("../middlewares/auths.middleware");
 
 // Register
-authRoute.post("/register", authController.registerUser);
+authRoute.post("/register", registerUser);
 
 // Login
-authRoute.post("/login", authController.loginUser);
+authRoute.post("/login", loginUser);
+
+// Login
+authRoute.get("/user", protect, loggedInUser);
 
 module.exports = authRoute;
