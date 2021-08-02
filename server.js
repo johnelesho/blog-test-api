@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const multer = require("multer");
+const path = require("path");
 
 const handleError = require("./middlewares/error.middleware");
 
@@ -21,6 +23,21 @@ uri = uri
 const port = process.env.PORT || port;
 
 app.use(express.json());
+app.use("/images", express.static(path.join(__dirname, "/images")));
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.body.name);
+  },
+});
+
+const upload = multer({ storage: storage });
+app.post("/api/upload", upload.single("file"), (req, res) => {
+  res.status(200).json("File has been uploaded");
+});
 
 app.use(require("./middlewares/logger.middleware"));
 

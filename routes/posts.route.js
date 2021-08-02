@@ -13,6 +13,9 @@ postRoute.get("/:postId/comments", postController.getAllCommentOnPost);
 //UPDATE POST
 postRoute.put("/:id", postController.updatePost);
 
+//UPDATE POST - Add category
+postRoute.put("/:id/category", postController.addCategory);
+
 //DELETE POST
 postRoute.delete("/:id", postController.deletePost);
 

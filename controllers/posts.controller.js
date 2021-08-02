@@ -50,6 +50,37 @@ exports.updatePost = async (req, res, next) => {
   }
 };
 
+// @desc      Update Post Add Category
+// @route     PUT /api/v1/posts/:id/category
+// @access    Private
+exports.addCategory = async (req, res, next) => {
+  try {
+    const post = await PostModel.findById(req.params.id);
+    if (post.author === req.body.author) {
+      try {
+        const updatedPost = await PostModel.findByIdAndUpdate(
+          req.params.id,
+          {
+            category: { $push: req.body },
+          },
+          { new: true }
+        );
+        res.status(203).json({
+          message: "Post Updated",
+          error: false,
+          data: updatedPost,
+        });
+      } catch (err) {
+        next(err);
+      }
+    } else {
+      return next(new ResponseError("You can not update this post", 401));
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
 /*
 // @desc      Add comment to a Post
 // @route     PUT /api/v1/posts/:id/comments
