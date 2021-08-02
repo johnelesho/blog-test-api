@@ -28,7 +28,45 @@ JWT_COOKIE_EXPIRE
 --Well detailed documentation
 https://documenter.getpostman.com/view/12052737/Tzsfo62u
 
+// @desc Register user
+// @route POST /api/v1/auth/register
+// @access Public
+// @request
+{
+"username": "",
+"email": "",
+"password": ""
+}
+
+// @desc Login user
+// @route POST /api/v1/auth/login
+// @access Public
+// @request
+{
+"username": "",
+"password": ""
+}
+
+// @desc Get current logged in user
+// @route GET /api/v1/auth/user
+// @access Private
+
+// @desc Get all Post
+// @route Get /api/v1/posts/
+// @access Public
+
+// @desc Create Posts
+// @route POST /api/v1/post/
+// @access Private
+// Body {
+
+    "title" : "Blog two",
+    "body": "This is a blog 1"
+
+}
+
 Link to the hosted api
+https://speckle-magnificent-chokeberry.glitch.me
 
 --Tools used
 Softwares Application:
