@@ -10,7 +10,7 @@ exports.createCategory = async (req, res, next) => {
     const savedCat = await newCat.save();
     res.status(200).json({
       message: "New Category Added",
-      error: false,
+      success: true,
       data: savedCat,
     });
   } catch (err) {
@@ -26,7 +26,7 @@ exports.allCategory = async (req, res, next) => {
     const cats = await CategoryModel.find();
     res.status(200).json({
       message: "Category",
-      error: false,
+      success: true,
       data: cats,
     });
   } catch (err) {

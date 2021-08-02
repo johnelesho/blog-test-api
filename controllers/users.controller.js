@@ -21,11 +21,11 @@ exports.updateUser = async (req, res, next) => {
         },
         { new: true }
       );
-      const { password, ...others } = updatedUser._doc;
+      // const { password, ...others } = updatedUser._doc;
       res.status(200).json({
         message: "Successfully Updated the user record",
-        error: false,
-        data: others,
+        success: true,
+        data: updatedUser,
       });
     } catch (err) {
       next(err);
@@ -39,7 +39,7 @@ exports.updateUser = async (req, res, next) => {
 // @route     POST /api/v1/user/:id
 // @access    Private
 exports.deleteUser = async (req, res, next) => {
-  let { id, password } = req.body;
+  let { id } = req.body;
   if (id === req.params.id) {
     try {
       const user = await UserModel.findById(req.params.id);
@@ -47,12 +47,11 @@ exports.deleteUser = async (req, res, next) => {
       try {
         await PostModel.deleteMany({ username: user.username });
 
-        const deletedUser = await UserModel.findByIdAndDelete(req.params.id);
+        await UserModel.findByIdAndDelete(req.params.id);
         // const { password, ...others } = deletedUser._doc;
         res.status(200).json({
           message: "Successfully deleted the user record",
-          error: false,
-          data: null,
+          success: true,
         });
       } catch (err) {
         next(err);
@@ -73,11 +72,11 @@ exports.getUser = async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.params.id);
     console.log(user);
-    const { password, ...others } = user._doc;
+    // const { password, ...others } = user._doc;
     res.status(203).json({
       message: "User record exist",
-      error: false,
-      data: others,
+      success: true,
+      data: user,
     });
   } catch (err) {
     next(err);
@@ -92,14 +91,14 @@ exports.getAllUser = async (req, res, next) => {
   try {
     let users = await UserModel.find();
     console.log(users);
-    users = users.map((blogUser) => {
-      const { password, ...others } = blogUser._doc;
-      return others;
-    });
+    // users = users.map((blogUser) => {
+    //   const { password, ...others } = blogUser._doc;
+    //   return others;
+    // });
 
     res.status(203).json({
-      message: "User record exist",
-      error: false,
+      message: "All Users",
+      success: true,
       data: users,
     });
   } catch (err) {

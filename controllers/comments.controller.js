@@ -14,7 +14,7 @@ exports.createComment = async (req, res, next) => {
       const savedComment = await comment.save();
       res.status(200).json({
         message: `New Comment Added to post with id ${req.body.postId}`,
-        error: false,
+        success: true,
         data: savedComment,
       });
     } else {
@@ -33,7 +33,7 @@ exports.deleteComment = async (req, res, next) => {
     await CommentModel.findByIdAndDelete(req.params.commentId);
     res.status(200).json({
       message: "Comment has been deleted...",
-      error: false,
+      success: true,
     });
   } catch (err) {
     next(err);
@@ -54,7 +54,7 @@ exports.editComment = async (req, res, next) => {
     );
     res.status(200).json({
       message: "Comment has been updated...",
-      error: false,
+      success: true,
       data: updatedComment,
     });
   } catch (err) {

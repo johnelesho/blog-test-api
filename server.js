@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const multer = require("multer");
+const cookieParser = require("cookie-parser");
 const path = require("path");
 
 const handleError = require("./middlewares/error.middleware");
@@ -23,6 +24,7 @@ uri = uri
 const port = process.env.PORT || port;
 
 app.use(express.json());
+app.use(cookieParser());
 app.use("/images", express.static(path.join(__dirname, "/images")));
 
 const storage = multer.diskStorage({

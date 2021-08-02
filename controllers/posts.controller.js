@@ -11,7 +11,7 @@ exports.createPost = async (req, res, next) => {
     const savedPost = await newPost.save();
     res.status(200).json({
       message: "New Post Added",
-      error: false,
+      success: true,
       data: savedPost,
     });
   } catch (err) {
@@ -36,7 +36,7 @@ exports.updatePost = async (req, res, next) => {
         );
         res.status(203).json({
           message: "Post Updated",
-          error: false,
+          success: true,
           data: updatedPost,
         });
       } catch (err) {
@@ -67,7 +67,7 @@ exports.addCategory = async (req, res, next) => {
         );
         res.status(203).json({
           message: "Post Updated",
-          error: false,
+          success: true,
           data: updatedPost,
         });
       } catch (err) {
@@ -97,7 +97,7 @@ exports.createComment = async (req, res, next) => {
     );
     res.status(203).json({
       message: "Comment Added",
-      error: false,
+      success:true,
       data: updatedPost,
     });
   } catch (err) {
@@ -122,7 +122,7 @@ exports.editComment = async (req, res, next) => {
     );
     res.status(203).json({
       message: "Comment Added",
-      error: false,
+      success:true,
       data: updatedPost,
     });
   } catch (err) {
@@ -141,11 +141,9 @@ exports.deletePost = async (req, res, next) => {
     if (post.author === req.body.author) {
       try {
         await post.delete();
-        await CommentModel.deleteMany({ postId: req.params.id });
-
         res.status(200).json({
           message: "Post has been deleted...",
-          error: false,
+          success: true,
           data: null,
         });
       } catch (err) {
@@ -169,7 +167,7 @@ exports.getSinglePost = async (req, res, next) => {
     if (post.length > 0) {
       res.status(200).json({
         message: "Post Found",
-        error: false,
+        success: true,
         data: post,
       });
     } else {
@@ -202,7 +200,7 @@ exports.getAllPost = async (req, res, next) => {
     if (posts.length > 0) {
       res.status(200).json({
         message: "All Post Matching query",
-        error: false,
+        success: true,
         data: posts,
       });
     } else {
@@ -223,7 +221,7 @@ exports.getAllCommentOnPost = async (req, res, next) => {
     if (comments.length > 0) {
       res.status(200).json({
         message: `Comments on post with id ${req.params.postId}`,
-        error: false,
+        success: true,
         data: comments,
       });
     } else {
@@ -248,7 +246,7 @@ exports.getASingleCommentOnPost = async (req, res, next) => {
     if (comments.length > 0) {
       res.status(200).json({
         message: `Comment found`,
-        error: false,
+        success: true,
         data: comments,
       });
     } else {

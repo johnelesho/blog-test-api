@@ -1,29 +1,41 @@
 const postRoute = require("express").Router();
 const postController = require("../controllers/posts.controller");
+const { protect } = require("../middlewares/auths.middleware");
+
+postRoute
+  .route("/")
+  .post(protect, postController.createPost)
+  .get(postController.getAllPost);
 
 //CREATE POST
-postRoute.post("/", postController.createPost);
+// postRoute.post("/", protect, postController.createPost);
 
 //GET ALL POSTS
-postRoute.get("/", postController.getAllPost);
+// postRoute.get("/", postController.getAllPost);
 
-//Get all Comments on Post
-postRoute.get("/:postId/comments", postController.getAllCommentOnPost);
+postRoute
+  .route("/:id")
+  .get(postController.getSinglePost)
+  .put(protect, postController.updatePost)
+  .delete(protect, postController.deletePost);
 
 //UPDATE POST
-postRoute.put("/:id", postController.updatePost);
-
-//UPDATE POST - Add category
-postRoute.put("/:id/category", postController.addCategory);
-
-//DELETE POST
-postRoute.delete("/:id", postController.deletePost);
+// postRoute.put("/:id", protect, postController.updatePost);
 
 //GET A SINGLE POST
-postRoute.get("/:id", postController.getSinglePost);
+// postRoute.get("/:id", postController.getSinglePost);
+
+//DELETE POST
+// postRoute.delete("/:id", protect, postController.deletePost);
+
+//UPDATE POST - Add category
+postRoute.put("/:id/category", protect, postController.addCategory);
 
 // //Add Comment
 // postRoute.post("/:id/comments", postController.createComment);
+
+//Get all Comments on Post
+postRoute.get("/:postId/comments", postController.getAllCommentOnPost);
 
 //Get a single Comment on Post
 postRoute.get(

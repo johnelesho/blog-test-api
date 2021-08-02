@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
 const PostSchema = mongoose.Schema(
   {
     title: {
@@ -29,4 +30,14 @@ const PostSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+PostSchema.pre("save", function (next) {
+  this.slug = slugify(this.title, { lower: true });
+  next();
+});
+
+PostSchema.pre("remove", async function (next) {
+  console.log(`Comments being removed from Post ${this._id}`);
+  await this.model("Comment").deleteMany({ postId: this._id });
+  next();
+});
 module.exports = mongoose.model("Post", PostSchema);
