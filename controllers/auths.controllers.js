@@ -14,10 +14,11 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
     // const newUser = new UserModel();
 
     const user = await UserModel.create(req.body);
+    console.log(user);
 
     // const user = await newUser.save();
-    const { password, ...others } = user._doc;
-
+    // const { password, ...others } = user._doc;
+    // console.log(others);
     // const token = user.getSignedJwtToken();
 
     // res.status(201).json({
@@ -27,7 +28,7 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
     //   token,
     // });
 
-    sendTokenResponse(others, 200, res);
+    sendTokenResponse(user, 200, res);
   } catch (err) {
     next(err);
   }
@@ -118,10 +119,11 @@ const sendTokenResponse = (user, statusCode, res) => {
   if (process.env.NODE_ENV === "production") {
     options.secure = true;
   }
+  const { password, ...others } = user._doc;
 
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
-    data: user,
+    data: others,
     token,
   });
 };
